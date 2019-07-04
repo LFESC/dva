@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>core.create() | dva系列源码解读</title>
+    <meta name="description" content="dva 及其插件的源码解读">
+    
+    
+    <link rel="preload" href="/assets/css/0.styles.32133ca3.css" as="style"><link rel="preload" href="/assets/js/app.93ea7298.js" as="script"><link rel="preload" href="/assets/js/2.a2315dc4.js" as="script"><link rel="preload" href="/assets/js/9.5c2b8010.js" as="script"><link rel="prefetch" href="/assets/js/10.0333413d.js"><link rel="prefetch" href="/assets/js/11.a0be82b6.js"><link rel="prefetch" href="/assets/js/12.21699ce0.js"><link rel="prefetch" href="/assets/js/13.bde9a1fa.js"><link rel="prefetch" href="/assets/js/14.701e85c9.js"><link rel="prefetch" href="/assets/js/15.cfaa426f.js"><link rel="prefetch" href="/assets/js/16.df553f16.js"><link rel="prefetch" href="/assets/js/17.99aa4ac8.js"><link rel="prefetch" href="/assets/js/18.1b341e09.js"><link rel="prefetch" href="/assets/js/19.8a098ac6.js"><link rel="prefetch" href="/assets/js/20.356ec820.js"><link rel="prefetch" href="/assets/js/21.7f024ef8.js"><link rel="prefetch" href="/assets/js/22.f66253dc.js"><link rel="prefetch" href="/assets/js/3.0fb1afe3.js"><link rel="prefetch" href="/assets/js/4.1289af81.js"><link rel="prefetch" href="/assets/js/5.f6508bfc.js"><link rel="prefetch" href="/assets/js/6.99776dd6.js"><link rel="prefetch" href="/assets/js/7.e633eb79.js"><link rel="prefetch" href="/assets/js/8.be2a28ac.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.32133ca3.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">dva系列源码解读</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">首页</a></div><div class="nav-item"><a href="/dva/" class="nav-link router-link-active">dva</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">插件</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/dva-loading/" class="nav-link">dva-loading</a></li><li class="dropdown-item"><!----> <a href="/dva-immer/" class="nav-link">dva-immer</a></li></ul></div></div> <a href="https://github.com/LFESC/dva" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">首页</a></div><div class="nav-item"><a href="/dva/" class="nav-link router-link-active">dva</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title">插件</span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/dva-loading/" class="nav-link">dva-loading</a></li><li class="dropdown-item"><!----> <a href="/dva-immer/" class="nav-link">dva-immer</a></li></ul></div></div> <a href="https://github.com/LFESC/dva" target="_blank" rel="noopener noreferrer" class="repo-link">
+    GitHub
+    <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></nav>  <ul class="sidebar-links"><li><section class="sidebar-group depth-0"><p class="sidebar-heading open"><span>core.create()</span> <!----></p> <ul class="sidebar-links sidebar-group-items"><li><a href="/dva/api/core-create.html#概述" class="sidebar-link">概述</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/dva/api/core-create.html#源码地址" class="sidebar-link">源码地址</a><ul class="sidebar-sub-headers"></ul></li><li><a href="/dva/api/core-create.html#解析" class="sidebar-link">解析</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#create" class="sidebar-link">create</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#use" class="sidebar-link">use</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#model" class="sidebar-link">model</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#unmodel" class="sidebar-link">unmodel</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#replacemodel" class="sidebar-link">replaceModel</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#start" class="sidebar-link">start</a></li><li class="sidebar-sub-header"><a href="/dva/api/core-create.html#其它" class="sidebar-link">其它</a></li></ul></li></ul></section></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="core-create"><a href="#core-create" aria-hidden="true" class="header-anchor">#</a> core.create()</h1> <h2 id="概述"><a href="#概述" aria-hidden="true" class="header-anchor">#</a> 概述</h2> <p>core.create() 方法是 <a href="/dva/api/dva.html">dva()</a> 方法创建 app 对象的内部实现。</p> <h2 id="源码地址"><a href="#源码地址" aria-hidden="true" class="header-anchor">#</a> 源码地址</h2> <p><code>dva/packages/dva-core/src/index.js</code></p> <h2 id="解析"><a href="#解析" aria-hidden="true" class="header-anchor">#</a> 解析</h2> <h3 id="create"><a href="#create" aria-hidden="true" class="header-anchor">#</a> create</h3> <p>经过精简我们发现 create 方法内部其实就是创建了一个 app 对象然后返回了它。
+首先我们了解一些 app 对象的私有属性：</p> <ul><li>_models: 存放所有 models，默认值为 dvaModel</li> <li>_store: redux 的 store，在 start 方法里面创建</li> <li>_plugin: <a href="/dva/api/plugin.html">plugin</a> 对象
+接着我们看一下 app 里面的方法，这些方法包含了 use model start unmodel replace，除了 start 其余都是暴露给外面的 api，接下来就去看一看这几个方法是如何实现的。</li></ul> <div class="tip custom-block"><p class="custom-block-title">提示</p> <ul><li>app.router 是在 <a href="/dva/api/dva.html">dva</a> 里面实现的</li> <li>app.start 也是在 <a href="/dva/api/dva.html">dva</a> 里面实现的，这里的 start 方法不是对外暴露的那个 start 方法</li> <li>filterHooks 方法是对传入的 hooks 做了筛选，具体实现看<a href="/dva/api/plugin.html#filterhooks">这里</a></li> <li>plugin.use 涉及到 plugin 的逻辑，可以看<a href="/dva/api/plugin.html#use">这里</a></li></ul></div> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">create</span><span class="token punctuation">(</span><span class="token parameter">hooksAndOpts <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> createOpts <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> initialReducer<span class="token punctuation">,</span> setupApp <span class="token operator">=</span> noop <span class="token punctuation">}</span> <span class="token operator">=</span> createOpts<span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> plugin <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Plugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  plugin<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">(</span><span class="token function">filterHooks</span><span class="token punctuation">(</span>hooksAndOpts<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token punctuation">{</span>
+    _models<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token function">prefixNamespace</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token operator">...</span>dvaModel <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    _store<span class="token punctuation">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+    _plugin<span class="token punctuation">:</span> plugin<span class="token punctuation">,</span>
+    use<span class="token punctuation">:</span> plugin<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>plugin<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    model<span class="token punctuation">,</span>
+    start<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> app<span class="token punctuation">;</span>
+
+  <span class="token keyword">function</span> <span class="token function">model</span><span class="token punctuation">(</span><span class="token parameter">m</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+  
+  <span class="token keyword">function</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="use"><a href="#use" aria-hidden="true" class="header-anchor">#</a> use</h3> <p>use 方法其实是 Plugin 对象的 use 方法，所以我们将在 <a href="/dva/api/plugin.html#use">plugin</a> 那篇里面进行细致的讲解。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> plugin <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Plugin</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> app <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token comment">// ......</span>
+  use<span class="token punctuation">:</span> plugin<span class="token punctuation">.</span><span class="token function">use</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>plugin<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token comment">// ......</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre></div><h3 id="model"><a href="#model" aria-hidden="true" class="header-anchor">#</a> model</h3> <p>model 方法也很简单：</p> <ul><li>首先调用 <a href="/dva/api/prefixNamespace.html">prefixNamespace</a> 去处理传入的 model(m) 对象</li> <li>将处理好的 model 存入 _models 数组中</li> <li>返回处理好的 model 对象</li></ul> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">model</span><span class="token punctuation">(</span><span class="token parameter">m</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">!==</span> <span class="token string">'production'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">const</span> prefixedModel <span class="token operator">=</span> <span class="token function">prefixNamespace</span><span class="token punctuation">(</span><span class="token punctuation">{</span> <span class="token operator">...</span>m <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  app<span class="token punctuation">.</span>_models<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>prefixedModel<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> prefixedModel<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><p>但是还没完，这个 model 方法会在 start 方法里面被修改，真正实现的是 injectModel 这个方法，这个方法乍看起来不复杂，实际却调用了很多其它模块的方法，所以我们在本篇里面只需明白此方法的骨架即可。</p> <ul><li>首先调用上述的 model 方法获取 m 对象</li> <li>通过 getReducer 方法生成一个 reducer</li> <li>调用 store.replaceReducer 的方法重新生成全局 reducer，这也很好理解，因为 app.model 会注册新的 reducer，所以必然要生成新的全局 reducer</li> <li>如果传入的 model 上面有 effects 则调用 store.runSaga 方法（即 redux-saga 的 middleware.run），这里面值得一说的是 app._getSaga 方法，因为内容较多，故专门放在 <a href="/dva/api/getSaga.html">getSaga</a> 这章讲解</li> <li>如果有 subscriptions 则调用 <a href="/dva/api/subscription.html#run">runSubscription</a> 去处理，同时返回的值赋给 unlisteners，这个对象用于解除接听</li></ul> <div class="tip custom-block"><p class="custom-block-title">提示</p> <ul><li>关于 getReducer 的解析可以看<a href="/dva/api/getReducer.html">这里</a></li> <li>createReducer 方法会在最后介绍</li> <li>_handleActions 是 dva 的 hooks 之一，但是在文档里面没有说，一般也不会用到，它的作用是替代默认的 <a href="/dva/api/handleActions.html">handleActions</a> 来自定义如何生成 reducer，目前我知道的应用场景只有 <a href="/dva-immer/">dva-immer</a>
+值得</li></ul></div> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token comment">// Setup app.model and app.unmodel</span>
+app<span class="token punctuation">.</span>model <span class="token operator">=</span> <span class="token function">injectModel</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>app<span class="token punctuation">,</span> createReducer<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> unlisteners<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre></div><div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">injectModel</span><span class="token punctuation">(</span><span class="token parameter">createReducer<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> unlisteners<span class="token punctuation">,</span> m</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  m <span class="token operator">=</span> <span class="token function">model</span><span class="token punctuation">(</span>m<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> store <span class="token operator">=</span> app<span class="token punctuation">.</span>_store<span class="token punctuation">;</span>
+  store<span class="token punctuation">.</span>asyncReducers<span class="token punctuation">[</span>m<span class="token punctuation">.</span>namespace<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">getReducer</span><span class="token punctuation">(</span>
+    m<span class="token punctuation">.</span>reducers<span class="token punctuation">,</span>
+    m<span class="token punctuation">.</span>state<span class="token punctuation">,</span>
+    plugin<span class="token punctuation">.</span>_handleActions
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  store<span class="token punctuation">.</span><span class="token function">replaceReducer</span><span class="token punctuation">(</span><span class="token function">createReducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>m<span class="token punctuation">.</span>effects<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    store<span class="token punctuation">.</span><span class="token function">runSaga</span><span class="token punctuation">(</span>
+      app<span class="token punctuation">.</span><span class="token function">_getSaga</span><span class="token punctuation">(</span>m<span class="token punctuation">.</span>effects<span class="token punctuation">,</span> m<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'onEffect'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>m<span class="token punctuation">.</span>subscriptions<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    unlisteners<span class="token punctuation">[</span>m<span class="token punctuation">.</span>namespace<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">runSubscription</span><span class="token punctuation">(</span>
+      m<span class="token punctuation">.</span>subscriptions<span class="token punctuation">,</span>
+      m<span class="token punctuation">,</span>
+      app<span class="token punctuation">,</span>
+      onError
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="unmodel"><a href="#unmodel" aria-hidden="true" class="header-anchor">#</a> unmodel</h3> <p>通过分析源码我们可以看出 unmodel 主要做了如下几件事：</p> <ul><li>删除 store.asyncReducers 和 reducers 对应的 reducer</li> <li>调用 replaceReducer 替换为新的全局 reducer</li> <li>dispatch <code>@@dva/UPDATE</code> action，这个 action 内部并未处理</li> <li>dispatch <code>${namespace}/@@CANCEL_EFFECTS</code> action，这个在<a href="/dva/api/getSaga.html">getSaga</a> 里面做了处理</li> <li>调用 <a href="/dva/api/subscription.html#unlisten">unlistenSubscription</a> 解除监听器</li> <li>从 app._models 里面删除对应的 model</li></ul> <div class="tip custom-block"><p class="custom-block-title">提示</p> <p>asyncReducers 和 reducers 的区别：asyncReducers 是通过 app.model 动态加载的 而 reducers 是初始的</p></div> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">unmodel</span><span class="token punctuation">(</span><span class="token parameter">createReducer<span class="token punctuation">,</span> reducers<span class="token punctuation">,</span> unlisteners<span class="token punctuation">,</span> namespace</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> store <span class="token operator">=</span> app<span class="token punctuation">.</span>_store<span class="token punctuation">;</span>
+
+  <span class="token comment">// Delete reducers</span>
+  <span class="token keyword">delete</span> store<span class="token punctuation">.</span>asyncReducers<span class="token punctuation">[</span>namespace<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">delete</span> reducers<span class="token punctuation">[</span>namespace<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  store<span class="token punctuation">.</span><span class="token function">replaceReducer</span><span class="token punctuation">(</span><span class="token function">createReducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token punctuation">:</span> <span class="token string">'@@dva/UPDATE'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// Cancel effects</span>
+  store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>namespace<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/@@CANCEL_EFFECTS`</span></span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// Unlisten subscrioptions</span>
+  <span class="token function">unlistenSubscription</span><span class="token punctuation">(</span>unlisteners<span class="token punctuation">,</span> namespace<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// Delete model from app._models</span>
+  app<span class="token punctuation">.</span>_models <span class="token operator">=</span> app<span class="token punctuation">.</span>_models<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">model</span> <span class="token operator">=&gt;</span> model<span class="token punctuation">.</span>namespace <span class="token operator">!==</span> namespace<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="replacemodel"><a href="#replacemodel" aria-hidden="true" class="header-anchor">#</a> replaceModel</h3> <p>replaceModel 主要分为下面几步：</p> <ul><li>根据 model 的 namespace 找到在 models 数组里的 index 也就是 oldModelIdx</li> <li>判断 oldModelIdx 是否存在，如果存在则：
+<ul><li>dispatch <code>${namespace}/@@CANCEL_EFFECTS</code> 这个 action 会在 <a href="/dva/api/getSaga.html">getSaga</a> 里面处理</li> <li>删除 asyncReducers 和 reducers 上的 reducer</li> <li>调用 <a href="/dva/api/subscription.html#unlisten">unlistenSubscription</a> 解除对 subscrioptions 的监听</li> <li>调用 splice 从 models 里面删除原 model</li></ul></li> <li>通过 app.model(m) 注册新的 model</li> <li>dispatch <code>@@dva/UPDATE</code></li></ul> <div class="tip custom-block"><p class="custom-block-title">提示</p> <p>关于 <code>~oldModelIdx</code> 这里用了按位非，如果 oldModelIdx = -1，按位非后值为 0 因此可以用来判断。</p></div> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">replaceModel</span><span class="token punctuation">(</span><span class="token parameter">createReducer<span class="token punctuation">,</span> reducers<span class="token punctuation">,</span> unlisteners<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> m</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> store <span class="token operator">=</span> app<span class="token punctuation">.</span>_store<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span> namespace <span class="token punctuation">}</span> <span class="token operator">=</span> m<span class="token punctuation">;</span>
+  <span class="token keyword">const</span> oldModelIdx <span class="token operator">=</span> <span class="token function">findIndex</span><span class="token punctuation">(</span>
+    app<span class="token punctuation">.</span>_models<span class="token punctuation">,</span>
+    <span class="token parameter">model</span> <span class="token operator">=&gt;</span> model<span class="token punctuation">.</span>namespace <span class="token operator">===</span> namespace
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">~</span>oldModelIdx<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// Cancel effects</span>
+    store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token punctuation">:</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>namespace<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/@@CANCEL_EFFECTS`</span></span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Delete reducers</span>
+    <span class="token keyword">delete</span> store<span class="token punctuation">.</span>asyncReducers<span class="token punctuation">[</span>namespace<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">delete</span> reducers<span class="token punctuation">[</span>namespace<span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Unlisten subscrioptions</span>
+    <span class="token function">unlistenSubscription</span><span class="token punctuation">(</span>unlisteners<span class="token punctuation">,</span> namespace<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token comment">// Delete model from app._models</span>
+    app<span class="token punctuation">.</span>_models<span class="token punctuation">.</span><span class="token function">splice</span><span class="token punctuation">(</span>oldModelIdx<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// add new version model to store</span>
+  app<span class="token punctuation">.</span><span class="token function">model</span><span class="token punctuation">(</span>m<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  store<span class="token punctuation">.</span><span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token punctuation">:</span> <span class="token string">'@@dva/UPDATE'</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="start"><a href="#start" aria-hidden="true" class="header-anchor">#</a> start</h3> <p>start 方法比较庞大，我将其分为几大部分（有些是作者自己分的），下面每一条对应的就是下方代码中注释的第几条。</p> <ol><li><strong>生成 reducers 和 sagas：</strong> 遍历 app._models 生成 reducers 以及根据每个 model 的 effects 生成 sagas</li> <li><strong>生成 reducerEnhancer 并校验 extraReducers：</strong> reducerEnhancer 用于最下方的 createReducer 方法，获取 extraReducers 并对其遍历判断是否有和 reducers 冲突的 reducer</li> <li><strong>创建 store：</strong> 调用 <a href="/dva/api/createStore.html">createStore</a> 方法生成 store</li> <li><strong>扩展 store：</strong> store 对象上面添加 runSaga 和 asyncReducers</li> <li><strong>执行 listener 当 state 改变时：</strong> 调用 store.subscribe 设置 store 改变时的监听器，处理函数就是 onStateChange 定义的 listeners</li> <li><strong>run sagas：</strong> 遍历 sagas 执行 sagaMiddleware.run 执行 saga</li> <li><strong>设置 app：</strong> 调用 setupApp 方法，这个方法是外部传入的，关于这个方法做了什么可以去看<a href="/dva/api/dva.html">dva()</a></li> <li><strong>执行 subscriptions：</strong> 遍历所有的 models 并通过 <a href="/dva/api/subscription.html#run">runSubscription</a> 执行每个 models 的 subscriptions</li> <li><strong>设置 model unmodel 和 replaceModel：</strong> 给 app 添加这几个方法，这几个方法的内部实现我们都在上面详细讲述了</li></ol> <div class="tip custom-block"><p class="custom-block-title">提示</p> <p>_handleActions 是 dva 的 hooks 之一，但是在文档里面没有说，一般也不会用到，它的作用是替代默认的 <a href="/dva/api/handleActions.html">handleActions</a> 来自定义如何生成 reducer，目前我知道的应用场景只有 <a href="/dva-immer/">dva-immer</a></p></div> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">function</span> <span class="token function">start</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// 全局错误处理</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">onError</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> extension</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ......</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> sagaMiddleware <span class="token operator">=</span> <span class="token function">createSagaMiddleware</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> promiseMiddleware <span class="token operator">=</span> <span class="token function">createPromiseMiddleware</span><span class="token punctuation">(</span>app<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  app<span class="token punctuation">.</span>_getSaga <span class="token operator">=</span> <span class="token function">getSaga</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// ------ 1. 生成 reducers 和 sagas -------</span>
+  <span class="token keyword">const</span> sagas <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> reducers <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token operator">...</span>initialReducer <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> m <span class="token keyword">of</span> app<span class="token punctuation">.</span>_models<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    reducers<span class="token punctuation">[</span>m<span class="token punctuation">.</span>namespace<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">getReducer</span><span class="token punctuation">(</span>
+      m<span class="token punctuation">.</span>reducers<span class="token punctuation">,</span>
+      m<span class="token punctuation">.</span>state<span class="token punctuation">,</span>
+      plugin<span class="token punctuation">.</span>_handleActions
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>m<span class="token punctuation">.</span>effects<span class="token punctuation">)</span>
+      sagas<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span><span class="token function">_getSaga</span><span class="token punctuation">(</span>m<span class="token punctuation">.</span>effects<span class="token punctuation">,</span> m<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'onEffect'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ------ 2. 生成 reducerEnhancer 并校验 extraReducers -------</span>
+  <span class="token keyword">const</span> reducerEnhancer <span class="token operator">=</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'onReducer'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">const</span> extraReducers <span class="token operator">=</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'extraReducers'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function">invariant</span><span class="token punctuation">(</span>
+    Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>extraReducers<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">every</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=&gt;</span> <span class="token operator">!</span><span class="token punctuation">(</span>key <span class="token keyword">in</span> reducers<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token template-string"><span class="token string">`[app.start] extraReducers is conflict with other reducers, reducers list: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>
+      reducers
+    <span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">', '</span><span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// ------- 3. 创建 store --------</span>
+  <span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token punctuation">(</span>app<span class="token punctuation">.</span>_store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token comment">// eslint-disable-line</span>
+    reducers<span class="token punctuation">:</span> <span class="token function">createReducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    initialState<span class="token punctuation">:</span> hooksAndOpts<span class="token punctuation">.</span>initialState <span class="token operator">||</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    plugin<span class="token punctuation">,</span>
+    createOpts<span class="token punctuation">,</span>
+    sagaMiddleware<span class="token punctuation">,</span>
+    promiseMiddleware<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// ------- 4. 扩展 store --------</span>
+  store<span class="token punctuation">.</span>runSaga <span class="token operator">=</span> sagaMiddleware<span class="token punctuation">.</span>run<span class="token punctuation">;</span>
+  store<span class="token punctuation">.</span>asyncReducers <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// ------- 5. 执行 listener 当 state 改变时 --------</span>
+  <span class="token keyword">const</span> listeners <span class="token operator">=</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'onStateChange'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> listener <span class="token keyword">of</span> listeners<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    store<span class="token punctuation">.</span><span class="token function">subscribe</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+      <span class="token function">listener</span><span class="token punctuation">(</span>store<span class="token punctuation">.</span><span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// -------- 6. run sagas --------</span>
+  sagas<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>sagaMiddleware<span class="token punctuation">.</span>run<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// -------- 7. 设置 app --------</span>
+  <span class="token function">setupApp</span><span class="token punctuation">(</span>app<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">// -------- 8. 执行 subscriptions --------</span>
+  <span class="token keyword">const</span> unlisteners <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> model <span class="token keyword">of</span> <span class="token keyword">this</span><span class="token punctuation">.</span>_models<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>model<span class="token punctuation">.</span>subscriptions<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      unlisteners<span class="token punctuation">[</span>model<span class="token punctuation">.</span>namespace<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">runSubscription</span><span class="token punctuation">(</span>
+        model<span class="token punctuation">.</span>subscriptions<span class="token punctuation">,</span>
+        model<span class="token punctuation">,</span>
+        app<span class="token punctuation">,</span>
+        onError
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// -------- 9. 设置 model unmodel 和 replaceModel --------</span>
+  app<span class="token punctuation">.</span>model <span class="token operator">=</span> <span class="token function">injectModel</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>app<span class="token punctuation">,</span> createReducer<span class="token punctuation">,</span> onError<span class="token punctuation">,</span> unlisteners<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  app<span class="token punctuation">.</span>unmodel <span class="token operator">=</span> <span class="token function">unmodel</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>app<span class="token punctuation">,</span> createReducer<span class="token punctuation">,</span> reducers<span class="token punctuation">,</span> unlisteners<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  app<span class="token punctuation">.</span>replaceModel <span class="token operator">=</span> <span class="token function">replaceModel</span><span class="token punctuation">.</span><span class="token function">bind</span><span class="token punctuation">(</span>
+    app<span class="token punctuation">,</span>
+    createReducer<span class="token punctuation">,</span>
+    reducers<span class="token punctuation">,</span>
+    unlisteners<span class="token punctuation">,</span>
+    onError
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token comment">/**
+   * 给 redux 创建全局的 reducers
+   *
+   * @returns {Object}
+   */</span>
+  <span class="token keyword">function</span> <span class="token function">createReducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token function">reducerEnhancer</span><span class="token punctuation">(</span>
+      <span class="token function">combineReducers</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token operator">...</span>reducers<span class="token punctuation">,</span>
+        <span class="token operator">...</span>extraReducers<span class="token punctuation">,</span>
+        <span class="token operator">...</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>_store <span class="token operator">?</span> app<span class="token punctuation">.</span>_store<span class="token punctuation">.</span>asyncReducers <span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre></div><h3 id="其它"><a href="#其它" aria-hidden="true" class="header-anchor">#</a> 其它</h3> <p><strong>1. createReducer</strong><br>
+createReducer 的作用很简单就是将所有 reducers 结合成一个 reducer，实现也很简单，但是这里特别拿出来讲是因为在这个方法里面它调用了 onReducer 和 extraReducers 这两个 hooks。</p> <div class="language-javascript extra-class"><pre class="language-javascript"><code><span class="token keyword">const</span> reducerEnhancer <span class="token operator">=</span> plugin<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token string">'onReducer'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">createReducer</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token function">reducerEnhancer</span><span class="token punctuation">(</span>
+    <span class="token function">combineReducers</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+      <span class="token operator">...</span>reducers<span class="token punctuation">,</span>
+      <span class="token operator">...</span>extraReducers<span class="token punctuation">,</span>
+      <span class="token operator">...</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span>_store <span class="token operator">?</span> app<span class="token punctuation">.</span>_store<span class="token punctuation">.</span>asyncReducers <span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.93ea7298.js" defer></script><script src="/assets/js/2.a2315dc4.js" defer></script><script src="/assets/js/9.5c2b8010.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "dva-site",
+  "scripts": {
+    "dev": "vuepress dev ../docs",
+    "build": "vuepress build ../docs --dest ./build"
+  },
+  "devDependencies": {
+    "vuepress": "^1.0.2"
+  }
+}
