@@ -26,3 +26,28 @@ function model(m) {
 通过第二个问题我们知道当在 effect put 一个 action 的时候 dva 会自动给 type 加上前缀 `${namespace}${NAMESPACE_SEP}` 但是如果加上前缀的 type 并不在当前 model 内则会使用原 type，所以我们是可以在一个 model 里面调用另一个 model 的 effects 和 reducers 的。
 ## 4. 为何 dispatch 方法能返回 promise
 在 dva 调用 [createStore](./createStore.md) 创建 redux store 时设置了一些 middlewares，其中有一个叫 promiseMiddleware 的中间件，它的作用就是当 dispatch 一个 effects 时返回一个 promise，但是这里它做了判断只有 effects 会返回 promise，详情可以去看 [middleware](./api/middleware.md#promisemiddleware) 的解析。
+## 5. 为何 response 的值是 query 从服务器获取到的值
+```javascript
+effects: {
+  *fetch(_, { call, put }) {
+    const response = call(query)
+
+    put({
+      type: 'save',
+      payload: response
+    })
+  }
+}
+```
+实际上这是因为 redux-saga 的源码里面去执行了这段代码：
+```javascript
+function next() {
+  // ......
+  result = iterator.next(arg) 
+  // ......
+}
+```
+iterator 就是你的 fetch 方法返回的迭代器，arg 就是你的 call 方法的返回结果，[Generator.prototype.next()](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Generator/next#%E5%90%91%E7%94%9F%E6%88%90%E5%99%A8%E4%BC%A0%E5%80%BC) 方法可以传递一个参数，这个参数的值会赋值给上一个 yield 的返回赋值, 也就是当执行到 put 时会将 call 的返回值赋值给 response。
+::: tip 提示
+关于 redux-saga 的源码可以看[这篇文章](https://lfesc.github.io/redux-saga/)
+:::

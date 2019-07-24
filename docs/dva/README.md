@@ -6,6 +6,19 @@
 2. 为何 dispatch 的 action type 要加上 namespace
 3. 在一个 model 里面可否调用其它 model 的 effects 和 reducers
 4. 为何 dispatch 方法能返回 promise  
+5. 为何 response 的值是 query 从服务器获取到的值
+```javascript
+effects: {
+  *fetch(_, { call, put }) {
+    const response = call(query)
+
+    put({
+      type: 'save',
+      payload: response
+    })
+  }
+}
+```
 ::: tip 提示
 你可以先看完整个源码的解析然后从中找出问题的答案，可以直接跳到[解答](./answers.md)页面。
 :::
